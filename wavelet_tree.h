@@ -12,9 +12,18 @@ public:
     std::vector<bool> bitmap;
     node *children[2];
 
+    // Only for debugging. Remove if never used.
+    std::string str;
+
     node() {
         children[0] = children[1] = nullptr;
     }
+
+#ifdef DEBUG
+    node(const std::string &s) : str(s) {
+        children[0] = children[1] = nullptr;
+    }
+#endif
 };
 
 class wavelet_tree {
@@ -42,10 +51,12 @@ class wavelet_tree {
         if (_range.first == _range.second)
             return nullptr;
 
-        // debug
-        std::cout << "range: " << _range.first << ", " << _range.second << std::endl;
-
+#ifdef DEBUG
+        node *_node = new node(s);
+#else
         node *_node = new node;
+#endif
+
         std::string s0, s1;
         uint8_t mid = (_range.first + _range.second) / 2;
         for (char c : s) {
@@ -72,8 +83,30 @@ public:
         std::string alphabet = get_alphabet(s);
         a_map alpha_map = get_alphabet_map(alphabet);
 
+        //debug
+        // std::cout << "alphabet: " << alphabet << std::endl;
+
         root = build_node(s, {1, alphabet.size()}, alpha_map);
     }
+
+#ifdef DEBUG
+    void _traverse(node *_node) {
+        if (_node == nullptr)
+            return;
+
+        std::cout << _node->str << std::endl;
+        for (bool b : _node->bitmap)
+            std::cout << b;
+        std::cout << std::endl << std::endl;
+
+        _traverse(_node->children[0]);
+        _traverse(_node->children[1]);
+    }
+
+    void traverse() {
+        _traverse(root);
+    }
+#endif
 };
 
 }
