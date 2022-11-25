@@ -5,4 +5,4 @@ debug:
 	g++ -std=c++11 -D DEBUG wavelet_tree_test.cpp -o wavelet_tree.out
 
 run:
-	./wavelet_tree
+	./wavelet_tree.out
