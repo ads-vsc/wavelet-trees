@@ -36,6 +36,7 @@ class wavelet_tree {
 
     node *root;
     std::string alphabet;
+    a_map alpha_map;
 
 
     std::string get_alphabet(const std::string &s) const {
@@ -96,7 +97,7 @@ public:
         // If get_alphabet is not needed separately, then consider merging
         // get_alphabet & get_alphabet_map
         alphabet = get_alphabet(s);
-        a_map alpha_map = get_alphabet_map(alphabet);
+        alpha_map = get_alphabet_map(alphabet);
 
         //debug
         // std::cout << "alphabet: " << alphabet << std::endl;
@@ -105,34 +106,28 @@ public:
         
     }
 
-    int _rank(int i, char x, node *N, range _range, int char_num) {
-        std::vector<bool> B;
-        
-        uint8_t mid;
-
-        while (N) {
-            B = N->bitmap;
-            mid = (_range.first + _range.second) / 2;
-            if (char_num <= mid) {
-                i = _rank(i, x, N->children[0], {1, mid}, char_num);
-            }
-            else {
-                i = _rank(i, x, N->children[1], {mid+1, _range.second}, char_num);
-            }
-        }
-        return i;
-    }
-
-    int rank(int i, char x) {
-        std::string alphabet = get_alphabet(root->str);
-        a_map alpha_map = get_alphabet_map(alphabet);
-
-        int char_num = alpha_map[x];
-
+    size_t rank(char c, size_t index) {
+        // std::cout << "alphabet: (" << alphabet <<")" << std::endl;
+        node *_node = root;
         range _range = {1, alphabet.size()};
+        uint8_t symbol_num = alpha_map[c];
+        size_t r;
 
-        int r = _rank(i, x, root, _range, char_num);
-        return r;
+        while (_node) {
+            uint8_t mid = (_range.first + _range.second) / 2;
+            // std::cout << "mid: " << int(mid) << std::endl;
+            bool b = symbol_num > mid;
+            // bin_rank returns count; so subtract 1 to use as index in bitmap
+            r = index = bin_rank(b, _node->bitmap, index) - 1;
+            _node = _node->children[b];
+
+            // update range
+            b ? _range.first = mid + 1 : _range.second = mid;
+        }
+
+        assert(_range.first == _range.second);
+        // Add 1 back to rank as it should be a count
+        return r + 1;
     }
 
 
@@ -140,7 +135,7 @@ public:
         node *_node = root;
         range _range = {1, alphabet.size()};
         
-        while (_node != nullptr) {
+        while (_node) {
             bool b = _node->bitmap[index];
             // bin_rank returns count; so subtract 1 to use as index in bitmap
             index = bin_rank(b, _node->bitmap, index) - 1;

@@ -5,13 +5,9 @@
 using namespace std;
 
 int main() {
-	// string s = "alabar a la alabarda";
-	string s = "mississippi";
+	string s = "alabar a la alabarda";
+	// string s = "mississippi";
 	wt::wavelet_tree tree(s);
-
-	// int r = tree.rank(6, 'i');
-	// cout << "Rank: " << r << endl;
-
 
 #ifdef DEBUG
 	tree.traverse();
@@ -21,6 +17,10 @@ int main() {
 	for (size_t i = 0; i < s.size(); ++i)
 		cout << tree.access(i);
 	cout << endl;
+
+	// Rank Test
+	for (char c : unordered_set<char>(s.begin(), s.end()))
+		cout << "Rank(" << c << ", " << s.size()-1 << "): " << tree.rank(c, s.size()-1) << endl;
 
 	return 0;
 }
