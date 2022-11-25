@@ -2,8 +2,9 @@
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
-
 #include <iostream>
+
+// #define DEBUG
 
 namespace wt {
 
@@ -32,6 +33,7 @@ class wavelet_tree {
     using range = std::pair<size_t, size_t>;
 
     node *root;
+
 
     std::string get_alphabet(const std::string &s) const {
         std::unordered_set<char> st(s.begin(), s.end());
@@ -75,6 +77,7 @@ class wavelet_tree {
         return _node;
     }
 
+
 public:
     wavelet_tree(const std::string &s) {
         // ephemeral alphabet for tree-building
@@ -87,7 +90,39 @@ public:
         // std::cout << "alphabet: " << alphabet << std::endl;
 
         root = build_node(s, {1, alphabet.size()}, alpha_map);
+        
     }
+
+    int _rank(int i, char x, node *N, range _range, int char_num) {
+        std::vector<bool> B;
+        
+        uint8_t mid;
+
+        while (N) {
+            B = N->bitmap;
+            mid = (_range.first + _range.second) / 2;
+            if (char_num <= mid) {
+                i = _rank(i, x, N->children[0], {1, mid}, char_num);
+            }
+            else {
+                i = _rank(i, x, N->children[1], {mid+1, _range.second}, char_num);
+            }
+        }
+        return i;
+    }
+
+    int rank(int i, char x) {
+        std::string alphabet = get_alphabet(root->str);
+        a_map alpha_map = get_alphabet_map(alphabet);
+
+        int char_num = alpha_map[x];
+
+        range _range = {1, alphabet.size()};
+
+        int r = _rank(i, x, root, _range, char_num);
+        return r;
+    }
+
 
 #ifdef DEBUG
     void _traverse(node *_node) {
