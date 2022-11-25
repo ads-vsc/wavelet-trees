@@ -1,6 +1,5 @@
 #include <bits/stdc++.h>
 #include "wavelet_tree.h"
-#include <algorithm>
 
 using namespace std;
 

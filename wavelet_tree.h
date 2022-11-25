@@ -6,8 +6,6 @@
 
 #include <iostream>
 
-// #define DEBUG
-
 namespace wt {
 
 class node {
@@ -107,7 +105,6 @@ public:
     }
 
     size_t rank(char c, size_t index) {
-        // std::cout << "alphabet: (" << alphabet <<")" << std::endl;
         node *_node = root;
         range _range = {1, alphabet.size()};
         uint8_t symbol_num = alpha_map[c];
@@ -115,7 +112,6 @@ public:
 
         while (_node) {
             uint8_t mid = (_range.first + _range.second) / 2;
-            // std::cout << "mid: " << int(mid) << std::endl;
             bool b = symbol_num > mid;
             // bin_rank returns count; so subtract 1 to use as index in bitmap
             r = index = bin_rank(b, _node->bitmap, index) - 1;
