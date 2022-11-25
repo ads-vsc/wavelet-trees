@@ -2,6 +2,8 @@
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
+#include <utility>
+
 #include <iostream>
 
 // #define DEBUG
@@ -33,6 +35,7 @@ class wavelet_tree {
     using range = std::pair<size_t, size_t>;
 
     node *root;
+    std::string alphabet;
 
 
     std::string get_alphabet(const std::string &s) const {
@@ -47,6 +50,15 @@ class wavelet_tree {
             map[c] = ++count; // count goes from 1 to n
         
         return map;
+    }
+
+    size_t bin_rank(bool b, std::vector<bool> &bitmap, size_t index) {
+        if (b) return index - bin_rank(0, bitmap, index) + 1;
+
+        size_t count = 0;
+        for (size_t i = 0; i <= index; ++i)
+            count += (!bitmap[i]);
+        return count;
     }
 
     node* build_node(const std::string &s, const range &_range, const a_map &map) {
@@ -83,7 +95,7 @@ public:
         // ephemeral alphabet for tree-building
         // If get_alphabet is not needed separately, then consider merging
         // get_alphabet & get_alphabet_map
-        std::string alphabet = get_alphabet(s);
+        alphabet = get_alphabet(s);
         a_map alpha_map = get_alphabet_map(alphabet);
 
         //debug
@@ -123,6 +135,25 @@ public:
         return r;
     }
 
+
+    char access(size_t index) {
+        node *_node = root;
+        range _range = {1, alphabet.size()};
+        
+        while (_node != nullptr) {
+            bool b = _node->bitmap[index];
+            // bin_rank returns count; so subtract 1 to use as index in bitmap
+            index = bin_rank(b, _node->bitmap, index) - 1;
+            _node = _node->children[b];
+            
+            // update range
+            uint8_t mid = (_range.first + _range.second) / 2;
+            b ? _range.first = mid + 1 : _range.second = mid;
+        }
+
+        assert(_range.first == _range.second);
+        return alphabet[_range.first - 1];
+    }
 
 #ifdef DEBUG
     void _traverse(node *_node) {

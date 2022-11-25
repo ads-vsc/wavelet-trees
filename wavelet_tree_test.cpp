@@ -17,5 +17,10 @@ int main() {
 	tree.traverse();
 #endif
 
+	// Access Test
+	for (size_t i = 0; i < s.size(); ++i)
+		cout << tree.access(i);
+	cout << endl;
+
 	return 0;
 }
