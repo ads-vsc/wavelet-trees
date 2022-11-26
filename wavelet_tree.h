@@ -60,7 +60,15 @@ class wavelet_tree {
         return count;
     }
 
-    node* build_node(const std::string &s, const range &_range, const a_map &map) {
+    size_t bin_select(bool b, std::vector<bool> &bitmap, size_t rank) {
+        size_t index = 0, count = 0;
+        while (count < rank) {
+            if (bitmap[index++] == b) ++count;
+        }
+        return index - 1;
+    }
+
+    node* build_node(const std::string &s, const range &_range) {
         if (_range.first == _range.second)
             return nullptr;
 
@@ -73,7 +81,7 @@ class wavelet_tree {
         std::string s0, s1;
         uint8_t mid = (_range.first + _range.second) / 2;
         for (char c : s) {
-            if (map.find(c)->second <= mid) {
+            if (alpha_map.find(c)->second <= mid) {
                 _node->bitmap.push_back(0);
                 s0.push_back(c);
             } else {
@@ -82,8 +90,8 @@ class wavelet_tree {
             }
         }
 
-        _node->children[0] = build_node(s0, {_range.first, mid}, map);
-        _node->children[1] = build_node(s1, {mid + 1, _range.second}, map);
+        _node->children[0] = build_node(s0, {_range.first, mid});
+        _node->children[1] = build_node(s1, {mid + 1, _range.second});
 
         return _node;
     }
@@ -100,7 +108,7 @@ public:
         //debug
         // std::cout << "alphabet: " << alphabet << std::endl;
 
-        root = build_node(s, {1, alphabet.size()}, alpha_map);
+        root = build_node(s, {1, alphabet.size()});
         
     }
 
@@ -126,6 +134,26 @@ public:
         return r + 1;
     }
 
+    size_t _select(node *_node, range &_range, char c, size_t rank) {
+        if (!_node) {
+            assert(_range.first == _range.second);
+            return rank;
+        }
+
+        uint8_t mid = (_range.first + _range.second) / 2;
+        bool b = alpha_map[c] > mid;
+        // update range
+        b ? _range.first = mid + 1 : _range.second = mid;
+        rank = _select(_node->children[b], _range, c, rank);
+        // Value returned by _select is an index. Add 1 to get rank.
+        return bin_select(b, _node->bitmap, rank + 1);
+    }
+
+    size_t select(char c, size_t rank) {
+        range _range = {1, alphabet.size()};
+        // Treat rank as index instead of count to simplify select operation
+        return _select(root, _range, c, rank - 1);
+    }
 
     char access(size_t index) {
         node *_node = root;

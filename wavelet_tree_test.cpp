@@ -21,5 +21,8 @@ int main() {
 	for (char c : unordered_set<char>(s.begin(), s.end()))
 		cout << "Rank(" << c << ", " << s.size()-1 << "): " << tree.rank(c, s.size()-1) << endl;
 
+	// Select Test
+	cout << tree.select('a', 6) << endl;
+
 	return 0;
 }
