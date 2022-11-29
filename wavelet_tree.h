@@ -176,21 +176,23 @@ public:
     }
 
 #ifdef DEBUG
-    void _traverse(node *_node) {
+    void _traverse(node *_node, int level) {
         if (_node == nullptr)
             return;
 
+        std::cout << "level: " << level << std::endl;
         std::cout << _node->str << std::endl;
         for (bool b : _node->bitmap)
             std::cout << b;
         std::cout << std::endl << std::endl;
 
-        _traverse(_node->children[0]);
-        _traverse(_node->children[1]);
+        _traverse(_node->children[0], level + 1);
+        _traverse(_node->children[1], level + 1);
     }
 
     void traverse() {
-        _traverse(root);
+		std::cout << "traverse()" << std::endl;
+        _traverse(root, 0);
     }
 #endif
 };
