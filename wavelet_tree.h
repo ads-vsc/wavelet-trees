@@ -3,7 +3,7 @@
 #include <unordered_map>
 #include <set>
 #include <utility>
-
+#include <iomanip>
 #include <iostream>
 
 namespace wt {
@@ -11,6 +11,7 @@ namespace wt {
 class node {
 public:
     std::vector<bool> bitmap;
+    std::vector<size_t> rank_0;
     node *children[2];
 
 #ifdef DEBUG
@@ -76,16 +77,26 @@ class wavelet_tree {
         node *_node = new node;
 #endif
 
+        size_t s_len = s.length();
         std::string s0, s1;
+        auto& bitmap = _node->bitmap;
+        auto& rank_0 = _node->rank_0;
+        bitmap.resize(s_len);
+        rank_0.resize(s_len);
+        size_t rank_0_so_far = 0;
+
         uint8_t mid = (_range.first + _range.second) / 2;
-        for (char c : s) {
+        for (size_t i = 0; i < s_len; ++i) {
+            char c = s[i];
             if (alpha_map[c] <= mid) {
-                _node->bitmap.push_back(0);
+                bitmap[i] = 0;
+                rank_0_so_far++;
                 s0.push_back(c);
             } else {
-                _node->bitmap.push_back(1);
+                bitmap[i] = 1;
                 s1.push_back(c);
             }
+            rank_0[i] = rank_0_so_far;
         }
 
         _node->children[0] = build_node(s0, {_range.first, mid});
@@ -193,6 +204,14 @@ public:
         std::cout << _node->str << std::endl;
         for (bool b : _node->bitmap)
             std::cout << b;
+        std::cout << std::endl;
+        std::cout << "bitmap: ";
+        for (bool b : _node->bitmap)
+            std::cout << std::setw(2) << b << ' ';
+        std::cout << std::endl;
+        std::cout << "rank_0: ";
+        for (size_t r : _node->rank_0)
+            std::cout << std::setw(2) << r << ' ';
         std::cout << std::endl << std::endl;
 
         _traverse(_node->children[0], level + 1);
