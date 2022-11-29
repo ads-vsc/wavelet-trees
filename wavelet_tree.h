@@ -97,6 +97,16 @@ class wavelet_tree {
         return _node;
     }
 
+    void destroy_node(node *_node) {
+        if (_node == nullptr)
+            return;
+
+        destroy_node(_node->children[0]);
+        destroy_node(_node->children[1]);
+
+        delete _node;
+    }
+
 
 public:
     wavelet_tree(const std::string &s) {
@@ -111,6 +121,10 @@ public:
 #endif
         root = build_node(s, {1, alphabet.size()});
         
+    }
+
+    ~wavelet_tree() {
+        destroy_node(root);
     }
 
     size_t rank(char c, size_t index) {
