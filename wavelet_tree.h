@@ -82,7 +82,7 @@ class wavelet_tree {
         std::string s0, s1;
         uint8_t mid = (_range.first + _range.second) / 2;
         for (char c : s) {
-            if (alpha_map.find(c)->second <= mid) {
+            if (alpha_map[c] <= mid) {
                 _node->bitmap.push_back(0);
                 s0.push_back(c);
             } else {
