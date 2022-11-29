@@ -37,19 +37,13 @@ class wavelet_tree {
     std::string alphabet;
     a_map alpha_map;
 
-
-    std::string get_alphabet(const std::string &s) const {
+    void build_alphabet_map(const std::string &s) {
         std::set<char> st(s.begin(), s.end());
-        return std::string(st.begin(), st.end());
-    }
+        alphabet = std::string(st.begin(), st.end());
 
-    a_map get_alphabet_map(const std::string &alphabet) const {
-        a_map map;
         uint8_t count = 0;
         for (const char c : alphabet)
-            map[c] = ++count; // count goes from 1 to n
-        
-        return map;
+            alpha_map[c] = ++count; // count goes from 1 to n
     }
 
     size_t bin_rank(bool b, std::vector<bool> &bitmap, size_t index) {
@@ -110,11 +104,7 @@ class wavelet_tree {
 
 public:
     wavelet_tree(const std::string &s) {
-        // ephemeral alphabet for tree-building
-        // If get_alphabet is not needed separately, then consider merging
-        // get_alphabet & get_alphabet_map
-        alphabet = get_alphabet(s);
-        alpha_map = get_alphabet_map(alphabet);
+        build_alphabet_map(s);
 
 #ifdef DEBUG
         std::cout << "alphabet: '" << alphabet << '\'' << std::endl << std::endl;
