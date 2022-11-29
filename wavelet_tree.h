@@ -6,6 +6,8 @@
 #include <iomanip>
 #include <iostream>
 
+#define PRECOMP
+
 namespace wt {
 
 class node {
@@ -119,6 +121,16 @@ class wavelet_tree {
         delete _node;
     }
 
+    static size_t precomp_rank(bool b, const node *_node, size_t index) {
+        if (b) return index - precomp_rank(0, _node, index) + 1;
+        return _node->rank_0[index];
+    }
+
+    static size_t precomp_select(bool b, const node *_node, size_t rank) {
+        if (b) return _node->select_1[rank];
+        return _node->select_0[rank];
+    }
+
 
 public:
     wavelet_tree(const std::string &s) {
@@ -145,8 +157,12 @@ public:
         while (_node) {
             uint8_t mid = (_range.first + _range.second) / 2;
             bool b = symbol_num > mid;
-            // bin_util::rank returns count; so subtract 1 to use as index in bitmap
+            // rank returns count; so subtract 1 to use as index in bitmap
+#ifdef PRECOMP
+            r = index = precomp_rank(b, _node, index) - 1;
+#else
             r = index = bin_util::rank(b, _node->bitmap, index) - 1;
+#endif
             _node = _node->children[b];
 
             // update range
@@ -170,8 +186,21 @@ public:
         // update range
         b ? _range.first = mid + 1 : _range.second = mid;
         rank = _select(_node->children[b], _range, c, rank);
+
         // Value returned by _select is an index. Add 1 to get rank.
+        // size_t sel1 = bin_util::select(b, _node->bitmap, rank + 1);
+
+        // Don't add 1 because it uses 0-based indexing
+        // size_t sel2 = precomp_select(b, _node, rank);
+
+        // assert(sel1 == sel2);
+        // std::cout << '(' << sel1 << ", " << sel2 << "), ";
+
+#ifdef PRECOMP
+        return precomp_select(b, _node, rank);
+#else
         return bin_util::select(b, _node->bitmap, rank + 1);
+#endif
     }
 
     size_t select(char c, size_t rank) const {
@@ -186,8 +215,16 @@ public:
         
         while (_node) {
             bool b = _node->bitmap[index];
-            // bin_util::rank returns count; so subtract 1 to use as index in bitmap
+            // rank returns count; so subtract 1 to use as index in bitmap
+            // size_t index1 = bin_util::rank(b, _node->bitmap, index) - 1;
+            // size_t index2 = precomp_rank(b, _node, index) - 1;
+            // assert(index1 == index2);
+            // std::cout << '(' << index1 << ", " << index2 << "), ";
+#ifdef PRECOMP
+            index = precomp_rank(b, _node, index) - 1;
+#else
             index = bin_util::rank(b, _node->bitmap, index) - 1;
+#endif
             _node = _node->children[b];
             
             // update range
