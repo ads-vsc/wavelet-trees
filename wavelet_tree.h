@@ -13,8 +13,9 @@ public:
     std::vector<bool> bitmap;
     node *children[2];
 
-    // Only for debugging. Remove if never used.
+#ifdef DEBUG
     std::string str;
+#endif
 
     node() {
         children[0] = children[1] = nullptr;
@@ -105,9 +106,9 @@ public:
         alphabet = get_alphabet(s);
         alpha_map = get_alphabet_map(alphabet);
 
-        //debug
-        // std::cout << "alphabet: " << alphabet << std::endl;
-
+#ifdef DEBUG
+        std::cout << "alphabet: '" << alphabet << '\'' << std::endl << std::endl;
+#endif
         root = build_node(s, {1, alphabet.size()});
         
     }
