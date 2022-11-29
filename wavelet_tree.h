@@ -6,8 +6,6 @@
 #include <iomanip>
 #include <iostream>
 
-#define PRECOMP
-
 namespace wt {
 
 class node {
