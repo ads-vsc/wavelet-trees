@@ -94,7 +94,7 @@ class wavelet_tree {
         return _node;
     }
 
-    void destroy_node(node *_node) {
+    void destroy_node(const node *_node) {
         if (_node == nullptr)
             return;
 
@@ -120,10 +120,11 @@ public:
         destroy_node(root);
     }
 
-    size_t rank(char c, size_t index) {
+    size_t rank(char c, size_t index) const {
         node *_node = root;
         range _range = {1, alphabet.size()};
-        uint8_t symbol_num = alpha_map[c];
+        // TODO: handle c not in map => if (!alpha_map.count(c))
+        uint8_t symbol_num = alpha_map.at(c);
         size_t r;
 
         while (_node) {
@@ -142,14 +143,15 @@ public:
         return r + 1;
     }
 
-    size_t _select(node *_node, range &_range, char c, size_t rank) {
+    size_t _select(const node *_node, range &_range, char c, size_t rank) const {
         if (!_node) {
             assert(_range.first == _range.second);
             return rank;
         }
 
         uint8_t mid = (_range.first + _range.second) / 2;
-        bool b = alpha_map[c] > mid;
+        // TODO: handle c not in map => if (!alpha_map.count(c))
+        bool b = alpha_map.at(c) > mid;
         // update range
         b ? _range.first = mid + 1 : _range.second = mid;
         rank = _select(_node->children[b], _range, c, rank);
@@ -157,13 +159,13 @@ public:
         return bin_util::select(b, _node->bitmap, rank + 1);
     }
 
-    size_t select(char c, size_t rank) {
+    size_t select(char c, size_t rank) const {
         range _range = {1, alphabet.size()};
         // Treat rank as index instead of count to simplify select operation
         return _select(root, _range, c, rank - 1);
     }
 
-    char access(size_t index) {
+    char access(size_t index) const {
         node *_node = root;
         range _range = {1, alphabet.size()};
         
@@ -183,7 +185,7 @@ public:
     }
 
 #ifdef DEBUG
-    void _traverse(node *_node, int level) {
+    void _traverse(const node *_node, int level) {
         if (_node == nullptr)
             return;
 
