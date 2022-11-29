@@ -1,7 +1,7 @@
 #include <vector>
 #include <string>
 #include <unordered_map>
-#include <unordered_set>
+#include <set>
 #include <utility>
 
 #include <iostream>
@@ -39,7 +39,7 @@ class wavelet_tree {
 
 
     std::string get_alphabet(const std::string &s) const {
-        std::unordered_set<char> st(s.begin(), s.end());
+        std::set<char> st(s.begin(), s.end());
         return std::string(st.begin(), st.end());
     }
 

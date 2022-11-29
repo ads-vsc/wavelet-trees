@@ -18,7 +18,7 @@ int main() {
 	cout << endl;
 
 	// Rank Test
-	for (char c : unordered_set<char>(s.begin(), s.end()))
+	for (char c : set<char>(s.begin(), s.end()))
 		cout << "Rank(" << c << ", " << s.size()-1 << "): " << tree.rank(c, s.size()-1) << endl;
 
 	// Select Test
