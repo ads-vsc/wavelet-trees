@@ -31,9 +31,8 @@ public:
 #endif
 };
 
-class bin_util {
-public:
-    static size_t rank(bool b, const std::vector<bool> &bitmap, size_t index) {
+namespace bin_util {
+    size_t rank(bool b, const std::vector<bool> &bitmap, size_t index) {
         if (b) return index - rank(0, bitmap, index) + 1;
 
         size_t count = 0;
@@ -42,14 +41,24 @@ public:
         return count;
     }
 
-    static size_t select(bool b, const std::vector<bool> &bitmap, size_t rank) {
+    size_t select(bool b, const std::vector<bool> &bitmap, size_t rank) {
         size_t index = 0, count = 0;
         while (count < rank) {
             if (bitmap[index++] == b) ++count;
         }
         return index - 1;
     }
-};
+
+    size_t precomp_rank(bool b, const node *_node, size_t index) {
+        if (b) return index - precomp_rank(0, _node, index) + 1;
+        return _node->rank_0[index];
+    }
+
+    size_t precomp_select(bool b, const node *_node, size_t rank) {
+        if (b) return _node->select_1[rank];
+        return _node->select_0[rank];
+    }
+}
 
 class wavelet_tree {
     // a_map = short for alphabet map
@@ -121,15 +130,6 @@ class wavelet_tree {
         delete _node;
     }
 
-    static size_t precomp_rank(bool b, const node *_node, size_t index) {
-        if (b) return index - precomp_rank(0, _node, index) + 1;
-        return _node->rank_0[index];
-    }
-
-    static size_t precomp_select(bool b, const node *_node, size_t rank) {
-        if (b) return _node->select_1[rank];
-        return _node->select_0[rank];
-    }
 
 
 public:
@@ -159,7 +159,7 @@ public:
             bool b = symbol_num > mid;
             // rank returns count; so subtract 1 to use as index in bitmap
 #ifdef PRECOMP
-            r = index = precomp_rank(b, _node, index) - 1;
+            r = index = bin_util::precomp_rank(b, _node, index) - 1;
 #else
             r = index = bin_util::rank(b, _node->bitmap, index) - 1;
 #endif
@@ -197,7 +197,7 @@ public:
         // std::cout << '(' << sel1 << ", " << sel2 << "), ";
 
 #ifdef PRECOMP
-        return precomp_select(b, _node, rank);
+        return bin_util::precomp_select(b, _node, rank);
 #else
         return bin_util::select(b, _node->bitmap, rank + 1);
 #endif
@@ -221,7 +221,7 @@ public:
             // assert(index1 == index2);
             // std::cout << '(' << index1 << ", " << index2 << "), ";
 #ifdef PRECOMP
-            index = precomp_rank(b, _node, index) - 1;
+            index = bin_util::precomp_rank(b, _node, index) - 1;
 #else
             index = bin_util::rank(b, _node->bitmap, index) - 1;
 #endif
