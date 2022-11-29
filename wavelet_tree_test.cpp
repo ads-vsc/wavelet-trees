@@ -14,15 +14,18 @@ int main() {
 
 	// Access Test
 	for (size_t i = 0; i < s.size(); ++i)
-		cout << tree.access(i);
+		cout << "access(" << i << ") = " << tree.access(i) << endl;
 	cout << endl;
 
 	// Rank Test
 	for (char c : set<char>(s.begin(), s.end()))
-		cout << "Rank(" << c << ", " << s.size()-1 << "): " << tree.rank(c, s.size()-1) << endl;
+		cout << "rank(" << c << ", " << s.size()-1 << ") = " << tree.rank(c, s.size()-1) << endl;
+	cout << endl;
 
 	// Select Test
-	cout << tree.select('a', 6) << endl;
+	for (char c : set<char>(s.begin(), s.end()))
+		cout << "select(" << c << ", " << 1 << ") = " << tree.select(c, 1) << endl;
+	cout << endl;
 
 	return 0;
 }
