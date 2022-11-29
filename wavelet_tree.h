@@ -28,6 +28,26 @@ public:
 #endif
 };
 
+class bin_util {
+public:
+    static size_t rank(bool b, const std::vector<bool> &bitmap, size_t index) {
+        if (b) return index - rank(0, bitmap, index) + 1;
+
+        size_t count = 0;
+        for (size_t i = 0; i <= index; ++i)
+            count += (!bitmap[i]);
+        return count;
+    }
+
+    static size_t select(bool b, const std::vector<bool> &bitmap, size_t rank) {
+        size_t index = 0, count = 0;
+        while (count < rank) {
+            if (bitmap[index++] == b) ++count;
+        }
+        return index - 1;
+    }
+};
+
 class wavelet_tree {
     // a_map = short for alphabet map
     using a_map = std::unordered_map<char, uint8_t>;
@@ -44,23 +64,6 @@ class wavelet_tree {
         uint8_t count = 0;
         for (const char c : alphabet)
             alpha_map[c] = ++count; // count goes from 1 to n
-    }
-
-    size_t bin_rank(bool b, std::vector<bool> &bitmap, size_t index) {
-        if (b) return index - bin_rank(0, bitmap, index) + 1;
-
-        size_t count = 0;
-        for (size_t i = 0; i <= index; ++i)
-            count += (!bitmap[i]);
-        return count;
-    }
-
-    size_t bin_select(bool b, std::vector<bool> &bitmap, size_t rank) {
-        size_t index = 0, count = 0;
-        while (count < rank) {
-            if (bitmap[index++] == b) ++count;
-        }
-        return index - 1;
     }
 
     node* build_node(const std::string &s, const range &_range) {
@@ -126,8 +129,8 @@ public:
         while (_node) {
             uint8_t mid = (_range.first + _range.second) / 2;
             bool b = symbol_num > mid;
-            // bin_rank returns count; so subtract 1 to use as index in bitmap
-            r = index = bin_rank(b, _node->bitmap, index) - 1;
+            // bin_util::rank returns count; so subtract 1 to use as index in bitmap
+            r = index = bin_util::rank(b, _node->bitmap, index) - 1;
             _node = _node->children[b];
 
             // update range
@@ -151,7 +154,7 @@ public:
         b ? _range.first = mid + 1 : _range.second = mid;
         rank = _select(_node->children[b], _range, c, rank);
         // Value returned by _select is an index. Add 1 to get rank.
-        return bin_select(b, _node->bitmap, rank + 1);
+        return bin_util::select(b, _node->bitmap, rank + 1);
     }
 
     size_t select(char c, size_t rank) {
@@ -166,8 +169,8 @@ public:
         
         while (_node) {
             bool b = _node->bitmap[index];
-            // bin_rank returns count; so subtract 1 to use as index in bitmap
-            index = bin_rank(b, _node->bitmap, index) - 1;
+            // bin_util::rank returns count; so subtract 1 to use as index in bitmap
+            index = bin_util::rank(b, _node->bitmap, index) - 1;
             _node = _node->children[b];
             
             // update range
