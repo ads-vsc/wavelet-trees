@@ -33,3 +33,6 @@
 
 # ide files
 .vscode
+
+# output folder
+out/
