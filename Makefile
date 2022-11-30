@@ -1,8 +1,13 @@
-build:
-	g++ -std=c++11 wavelet_tree_test.cpp -o wavelet_tree.out
+clean:
+	-rm out/*
 
-debug:
-	g++ -g -std=c++11 -D DEBUG wavelet_tree_test.cpp -o wavelet_tree.out
+build: clean
+	@mkdir -p out
+	g++ -std=c++17 wavelet_tree_test.cpp -o out/wavelet_tree.out
+
+debug: clean
+	@mkdir -p out
+	g++ -g -std=c++17 -D DEBUG wavelet_tree_test.cpp -o out/wavelet_tree.out
 
 run:
-	./wavelet_tree.out
+	out/wavelet_tree.out

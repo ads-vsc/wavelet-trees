@@ -60,62 +60,64 @@ namespace bin_util {
     }
 }
 
+template <class T=char>
 class wavelet_tree {
     // a_map = short for alphabet map
-    using a_map = std::unordered_map<char, uint8_t>;
+    using a_map = std::unordered_map<T, uint8_t>;
     using range = std::pair<size_t, size_t>;
 
     node *root;
-    std::string alphabet;
+    std::vector<T> alphabet;
     a_map alpha_map;
 
-    void build_alphabet_map(const std::string &s) {
-        std::set<char> st(s.begin(), s.end());
-        alphabet = std::string(st.begin(), st.end());
+    template <typename I>
+    void build_alphabet_map(I begin, I end) {
+        std::set<T> st(begin, end);
+        alphabet = std::vector<T>(st.begin(), st.end());
 
         uint8_t count = 0;
-        for (const char c : alphabet)
-            alpha_map[c] = ++count; // count goes from 1 to n
+        for (const T &t : alphabet)
+            alpha_map[t] = ++count; // count goes from 1 to n
     }
 
-    node* build_node(const std::string &s, const range &_range) {
+    node* build_node(const std::vector<T> &v, const range &_range) {
         if (_range.first == _range.second)
             return nullptr;
 
 #ifdef DEBUG
-        node *_node = new node(s);
+        node *_node = new node(v);
 #else
         node *_node = new node;
 #endif
 
-        size_t s_len = s.length();
-        std::string s0, s1;
+        size_t v_len = v.size();
+        std::vector<T> v0, v1;
         auto& bitmap = _node->bitmap;
         auto& rank_0 = _node->rank_0;
         auto& select_0 = _node->select_0;
         auto& select_1 = _node->select_1;
-        bitmap.resize(s_len);
-        rank_0.resize(s_len);
+        bitmap.resize(v_len);
+        rank_0.resize(v_len);
         size_t rank_0_so_far = 0;
 
         uint8_t mid = (_range.first + _range.second) / 2;
-        for (size_t i = 0; i < s_len; ++i) {
-            char c = s[i];
-            if (alpha_map[c] <= mid) {
+        for (size_t i = 0; i < v_len; ++i) {
+            const T &val = v[i];
+            if (alpha_map[val] <= mid) {
                 bitmap[i] = 0;
                 rank_0_so_far++;
                 select_0.push_back(i);
-                s0.push_back(c);
+                v0.push_back(val);
             } else {
                 bitmap[i] = 1;
                 select_1.push_back(i);
-                s1.push_back(c);
+                v1.push_back(val);
             }
             rank_0[i] = rank_0_so_far;
         }
 
-        _node->children[0] = build_node(s0, {_range.first, mid});
-        _node->children[1] = build_node(s1, {mid + 1, _range.second});
+        _node->children[0] = build_node(v0, {_range.first, mid});
+        _node->children[1] = build_node(v1, {mid + 1, _range.second});
 
         return _node;
     }
@@ -134,24 +136,27 @@ class wavelet_tree {
 
 public:
     wavelet_tree(const std::string &s) {
-        build_alphabet_map(s);
-
+        build_alphabet_map(s.begin(), s.end());
 #ifdef DEBUG
         std::cout << "alphabet: '" << alphabet << '\'' << std::endl << std::endl;
 #endif
-        root = build_node(s, {1, alphabet.size()});
-        
+        root = build_node({s.begin(), s.end()}, {1, alphabet.size()});
+    }
+
+    wavelet_tree(const std::vector<T> &v) {
+        build_alphabet_map(v.begin(), v.end());
+        root = build_node(v, {1, alphabet.size()});
     }
 
     ~wavelet_tree() {
         destroy_node(root);
     }
 
-    size_t rank(char c, size_t index) const {
+    size_t rank(const T& val, size_t index) const {
         node *_node = root;
         range _range = {1, alphabet.size()};
         // TODO: handle c not in map => if (!alpha_map.count(c))
-        uint8_t symbol_num = alpha_map.at(c);
+        uint8_t symbol_num = alpha_map.at(val);
         size_t r;
 
         while (_node) {
@@ -174,18 +179,18 @@ public:
         return r + 1;
     }
 
-    size_t _select(const node *_node, range &_range, char c, size_t rank) const {
+    size_t _select(const node *_node, range &_range, const T& val, size_t rank) const {
         if (!_node) {
             assert(_range.first == _range.second);
             return rank;
         }
 
         uint8_t mid = (_range.first + _range.second) / 2;
-        // TODO: handle c not in map => if (!alpha_map.count(c))
-        bool b = alpha_map.at(c) > mid;
+        // TODO: handle val not in map => if (!alpha_map.count(val))
+        bool b = alpha_map.at(val) > mid;
         // update range
         b ? _range.first = mid + 1 : _range.second = mid;
-        rank = _select(_node->children[b], _range, c, rank);
+        rank = _select(_node->children[b], _range, val, rank);
 
         // Value returned by _select is an index. Add 1 to get rank.
         // size_t sel1 = bin_util::select(b, _node->bitmap, rank + 1);
@@ -203,13 +208,13 @@ public:
 #endif
     }
 
-    size_t select(char c, size_t rank) const {
+    size_t select(T& val, size_t rank) const {
         range _range = {1, alphabet.size()};
         // Treat rank as index instead of count to simplify select operation
-        return _select(root, _range, c, rank - 1);
+        return _select(root, _range, val, rank - 1);
     }
 
-    char access(size_t index) const {
+    T access(size_t index) const {
         node *_node = root;
         range _range = {1, alphabet.size()};
         
