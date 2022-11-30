@@ -62,15 +62,28 @@ int main() {
 		cout << "access(" << i << ") = " << tree.access(i) << endl;
 	cout << endl;
 
+	// Access Invalid Input Test
+	cout << "access(" << -3 << ") = " << tree.access(50) << endl;
+	cout << "access(" << 50 << ") = " << tree.access(50) << endl;
+
 	// Rank Test
 	for (char c : set<char>(s.begin(), s.end()))
 		cout << "rank(" << c << ", " << s.size()-1 << ") = " << tree.rank(c, s.size()-1) << endl;
 	cout << endl;
 
+	//Rank Invalid Input Test
+	// cout << tree.rank('z', 3) << endl;
+
 	// Select Test
 	for (char c : set<char>(s.begin(), s.end()))
 		cout << "select(" << c << ", " << 1 << ") = " << tree.select(c, 1) << endl;
 	cout << endl;
+
+	
+
+	
+
+
 
 	int_test();
 	string_test();

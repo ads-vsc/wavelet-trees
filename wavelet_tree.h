@@ -168,7 +168,17 @@ public:
     size_t rank(const T& val, size_t index) const {
         auto *_node = root;
         range _range = {1, alphabet.size()};
-        // TODO: handle c not in map => if (!alpha_map.count(c))
+        try
+        {
+            if (alpha_map.count(val) == 0) {
+                throw std::out_of_range("invalid input");
+            }
+        }
+        catch(const std::out_of_range& e)
+        {
+            std::cout << e.what() << std::endl;
+        }
+        
         auto symbol_num = alpha_map.at(val);
         size_t r;
 
@@ -200,6 +210,17 @@ public:
 
         auto mid = (_range.first + _range.second) / 2;
         // TODO: handle val not in map => if (!alpha_map.count(val))
+        try
+        {
+            if (alpha_map.count(val) == 0) {
+                throw std::out_of_range("invalid input");
+            }
+        }
+        catch(const std::out_of_range& e)
+        {
+            std::cout << e.what() << std::endl;
+        }
+
         bool b = alpha_map.at(val) > mid;
         // update range
         b ? _range.first = mid + 1 : _range.second = mid;
@@ -228,6 +249,19 @@ public:
     }
 
     T access(size_t index) const {
+
+        try
+        {
+            if (index < 0 || index >= root->bitmap.size()) {
+                throw (std::out_of_range("index out of range"));
+            }
+        }
+        catch(const std::out_of_range& e)
+        {
+            std::cout << e.what() << '\n';
+            return 0;
+        }
+        
         auto *_node = root;
         range _range = {1, alphabet.size()};
         
