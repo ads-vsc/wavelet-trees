@@ -72,7 +72,7 @@ namespace bin_util {
 template <class T=char>
 class wavelet_tree {
     // a_map = short for alphabet map
-    using a_map = std::unordered_map<T, uint8_t>;
+    using a_map = std::unordered_map<T, size_t>;
     using range = std::pair<size_t, size_t>;
 
     node<T> *root;
@@ -91,7 +91,7 @@ class wavelet_tree {
         std::cout << std::endl;
 #endif
 
-        uint8_t count = 0;
+        size_t count = 0;
         for (const T &t : alphabet)
             alpha_map[t] = ++count; // count goes from 1 to n
     }
@@ -116,7 +116,7 @@ class wavelet_tree {
         rank_0.resize(v_len);
         size_t rank_0_so_far = 0;
 
-        uint8_t mid = (_range.first + _range.second) / 2;
+        auto mid = (_range.first + _range.second) / 2;
         for (size_t i = 0; i < v_len; ++i) {
             const T &val = v[i];
             if (alpha_map[val] <= mid) {
@@ -169,11 +169,11 @@ public:
         auto *_node = root;
         range _range = {1, alphabet.size()};
         // TODO: handle c not in map => if (!alpha_map.count(c))
-        uint8_t symbol_num = alpha_map.at(val);
+        auto symbol_num = alpha_map.at(val);
         size_t r;
 
         while (_node) {
-            uint8_t mid = (_range.first + _range.second) / 2;
+            auto mid = (_range.first + _range.second) / 2;
             bool b = symbol_num > mid;
             // rank returns count; so subtract 1 to use as index in bitmap
 #ifdef PRECOMP
@@ -198,7 +198,7 @@ public:
             return rank;
         }
 
-        uint8_t mid = (_range.first + _range.second) / 2;
+        auto mid = (_range.first + _range.second) / 2;
         // TODO: handle val not in map => if (!alpha_map.count(val))
         bool b = alpha_map.at(val) > mid;
         // update range
@@ -246,7 +246,7 @@ public:
             _node = _node->children[b];
             
             // update range
-            uint8_t mid = (_range.first + _range.second) / 2;
+            auto mid = (_range.first + _range.second) / 2;
             b ? _range.first = mid + 1 : _range.second = mid;
         }
 
