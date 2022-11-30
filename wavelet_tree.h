@@ -203,11 +203,6 @@ public:
         }
 
         auto mid = (_range.first + _range.second) / 2;
-        // TODO: handle val not in map => if (!alpha_map.count(val))
-
-        if (alpha_map.count(val) == 0) {
-            throw std::out_of_range("invalid input");
-        }
         
         bool b = alpha_map.at(val) > mid;
         // update range
@@ -231,6 +226,11 @@ public:
     }
 
     size_t select(T& val, size_t rank) const {
+
+        if (alpha_map.count(val) == 0) {
+            throw std::out_of_range("invalid input");
+        }
+        
         range _range = {1, alphabet.size()};
         // Treat rank as index instead of count to simplify select operation
         return _select(root, _range, val, rank - 1);
