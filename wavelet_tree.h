@@ -10,6 +10,7 @@
 
 namespace wt {
 
+template <class T>
 class node {
 public:
     std::vector<bool> bitmap;
@@ -17,7 +18,7 @@ public:
     node *children[2];
 
 #ifdef DEBUG
-    std::string str;
+    std::vector<T> data;
 #endif
 
     node() {
@@ -25,8 +26,14 @@ public:
     }
 
 #ifdef DEBUG
-    node(const std::string &s) : str(s) {
+    node(const std::vector<T> &v) : data(v) {
         children[0] = children[1] = nullptr;
+    }
+
+    void print_data() const {
+        for (const T& t : data)
+            std::cout << "'" << t << "', ";
+        std::cout << std::endl;
     }
 #endif
 };
@@ -49,12 +56,14 @@ namespace bin_util {
         return index - 1;
     }
 
-    size_t precomp_rank(bool b, const node *_node, size_t index) {
+    template <typename T>
+    size_t precomp_rank(bool b, const node<T> *_node, size_t index) {
         if (b) return index - precomp_rank(0, _node, index) + 1;
         return _node->rank_0[index];
     }
 
-    size_t precomp_select(bool b, const node *_node, size_t rank) {
+    template <typename T>
+    size_t precomp_select(bool b, const node<T> *_node, size_t rank) {
         if (b) return _node->select_1[rank];
         return _node->select_0[rank];
     }
@@ -66,7 +75,7 @@ class wavelet_tree {
     using a_map = std::unordered_map<T, uint8_t>;
     using range = std::pair<size_t, size_t>;
 
-    node *root;
+    node<T> *root;
     std::vector<T> alphabet;
     a_map alpha_map;
 
@@ -75,19 +84,26 @@ class wavelet_tree {
         std::set<T> st(begin, end);
         alphabet = std::vector<T>(st.begin(), st.end());
 
+#ifdef DEBUG
+        std::cout << "alphabet: '";
+        for (const T& t: alphabet)
+            std::cout << "'" << t << "', ";
+        std::cout << std::endl;
+#endif
+
         uint8_t count = 0;
         for (const T &t : alphabet)
             alpha_map[t] = ++count; // count goes from 1 to n
     }
 
-    node* build_node(const std::vector<T> &v, const range &_range) {
+    node<T>* build_node(const std::vector<T> &v, const range &_range) {
         if (_range.first == _range.second)
             return nullptr;
 
 #ifdef DEBUG
-        node *_node = new node(v);
+        auto *_node = new node(v);
 #else
-        node *_node = new node;
+        auto *_node = new node<T>;
 #endif
 
         size_t v_len = v.size();
@@ -122,7 +138,7 @@ class wavelet_tree {
         return _node;
     }
 
-    void destroy_node(const node *_node) {
+    void destroy_node(const node<T> *_node) {
         if (_node == nullptr)
             return;
 
@@ -137,9 +153,6 @@ class wavelet_tree {
 public:
     wavelet_tree(const std::string &s) {
         build_alphabet_map(s.begin(), s.end());
-#ifdef DEBUG
-        std::cout << "alphabet: '" << alphabet << '\'' << std::endl << std::endl;
-#endif
         root = build_node({s.begin(), s.end()}, {1, alphabet.size()});
     }
 
@@ -153,7 +166,7 @@ public:
     }
 
     size_t rank(const T& val, size_t index) const {
-        node *_node = root;
+        auto *_node = root;
         range _range = {1, alphabet.size()};
         // TODO: handle c not in map => if (!alpha_map.count(c))
         uint8_t symbol_num = alpha_map.at(val);
@@ -179,7 +192,7 @@ public:
         return r + 1;
     }
 
-    size_t _select(const node *_node, range &_range, const T& val, size_t rank) const {
+    size_t _select(const node<T> *_node, range &_range, const T& val, size_t rank) const {
         if (!_node) {
             assert(_range.first == _range.second);
             return rank;
@@ -215,7 +228,7 @@ public:
     }
 
     T access(size_t index) const {
-        node *_node = root;
+        auto *_node = root;
         range _range = {1, alphabet.size()};
         
         while (_node) {
@@ -242,15 +255,12 @@ public:
     }
 
 #ifdef DEBUG
-    void _traverse(const node *_node, int level) {
+    void _traverse(const node<T> *_node, int level) {
         if (_node == nullptr)
             return;
 
         std::cout << "level: " << level << std::endl;
-        std::cout << _node->str << std::endl;
-        for (bool b : _node->bitmap)
-            std::cout << b;
-        std::cout << std::endl;
+        _node->print_data();
         std::cout << "bitmap: ";
         for (bool b : _node->bitmap)
             std::cout << std::setw(2) << b << ' ';

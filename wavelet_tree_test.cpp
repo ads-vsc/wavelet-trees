@@ -7,6 +7,10 @@ void int_test() {
 	vector<int> v = {7, 4, 1, 6, 8, 3, 5, 2};
 	wt::wavelet_tree tree(v);
 
+#ifdef DEBUG
+	tree.traverse();
+#endif
+
 	for (size_t i = 0; i < v.size(); ++i)
 		cout << "access(" << i << ") = " << tree.access(i) << endl;
 	cout << endl;
@@ -25,6 +29,10 @@ void int_test() {
 void string_test() {
 	vector<string> v = {"to", "be", "or", "not", "to", "be"};
 	wt::wavelet_tree tree(v);
+
+#ifdef DEBUG
+	tree.traverse();
+#endif
 
 	for (size_t i = 0; i < v.size(); ++i)
 		cout << "access(" << i << ") = " << tree.access(i) << endl;
