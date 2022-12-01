@@ -112,11 +112,11 @@ class wavelet_tree {
         for (I& i = begin; i != end; i++) 
             print_element(*i);
         std::cout << std::endl;
-        std::cout << "Alphabet, 𝛴: ";
+        std::cout << "Alphabet, Σ: ";
         for (const T& t: alphabet)
             print_element(t);
         std::cout << std::endl;
-        std::cout << "Alphabet size, 𝜎: " << alphabet.size() << std::endl << std::endl;
+        std::cout << "Alphabet size, σ: " << alphabet.size() << std::endl << std::endl;
 #endif
 
         size_t count = 0;
