@@ -14,18 +14,17 @@ void char_test() {
 #endif
 
 	// access test
-	for (size_t i = 0; i < s.size(); ++i)
-		cout << "access(" << i << ") = " << tree.access(i) << endl;
-	cout << endl;
+	// for (size_t i = 0; i < s.size(); ++i)
+	// 	cout << "access(" << i << ") = " << tree.access(i) << endl;
+	cout << "access(" << 10 << ") = " << tree.access(10) << endl;
+	cout << "access(" << 15 << ") = " << tree.access(15) << endl;
 
 	// access test- invalid input
 	try {
-		cout << "access(" << -3 << ") = " << tree.access(50) << endl;
+		cout << "access(" << -3 << ") = " << tree.access(-3) << endl;
 	} catch(const std::out_of_range& e) {
 		std::cout << e.what() << endl;
 	}
-	cout << endl;
-
 	try {
 		cout << "access(" << 50 << ") = " << tree.access(50) << endl;
 	} catch(const std::out_of_range& e) {
@@ -33,11 +32,11 @@ void char_test() {
 	}
 	cout << endl;
 	
-
 	// rank test
-	for (char c : set<char>(s.begin(), s.end()))
-		cout << "rank(" << c << ", " << s.size()-1 << ") = " << tree.rank(c, s.size()-1) << endl;
-	cout << endl;
+	// for (char c : set<char>(s.begin(), s.end()))
+	// 	cout << "rank(" << c << ", " << s.size()-1 << ") = " << tree.rank(c, s.size()-1) << endl;
+	cout << "rank(" << 'l' << ", " << 11 << ") = " << tree.rank('l', 11) << endl;
+	cout << "rank(" << 'b' << ", " << 16 << ") = " << tree.rank('b', 16) << endl;
 
 	// rank test- invalid input
 	try {
@@ -48,9 +47,12 @@ void char_test() {
 	cout << endl;
 
 	// select test
-	for (char c : set<char>(s.begin(), s.end()))
-		cout << "select(" << c << ", " << 1 << ") = " << tree.select(c, 1) << endl;
-	cout << endl;
+	// for (char c : set<char>(s.begin(), s.end()))
+	// 	cout << "select(" << c << ", " << 1 << ") = " << tree.select(c, 1) << endl;
+	// cout << endl;
+	char c;
+	cout << "select(" << (c = 'b') << ", " << 2 << ") = " << tree.select(c, 2) << endl;
+	cout << "select(" << (c = 'a') << ", " << 6 << ") = " << tree.select(c, 6) << endl;
 
 	// select invalid input test
 	try {
@@ -69,6 +71,7 @@ void int_test() {
 	tree.traverse();
 #endif
 
+	// access test
 	for (size_t i = 0; i < v.size(); ++i)
 		cout << "access(" << i << ") = " << tree.access(i) << endl;
 	cout << endl;
@@ -93,34 +96,43 @@ void string_test() {
 #endif
 
 	// access test
-	for (size_t i = 0; i < v.size(); ++i)
-		cout << "access(" << i << ") = " << tree.access(i) << endl;
+	// for (size_t i = 0; i < v.size(); ++i)
+	// 	cout << "access(" << i << ") = " << tree.access(i) << endl;
+	cout << "access(" << 2 << ") = " << tree.access(2) << endl;
+	cout << "access(" << 4 << ") = " << tree.access(4) << endl;
 	cout << endl;
 
 	// rank test
-	for (string c : set<string>(v.begin(), v.end()))
-		cout << "rank(" << c << ", " << v.size()-1 << ") = " << tree.rank(c, v.size()-1) << endl;
+	// for (string c : set<string>(v.begin(), v.end()))
+	// 	cout << "rank(" << c << ", " << v.size()-1 << ") = " << tree.rank(c, v.size()-1) << endl;
+	cout << "rank(" << "to" << ", " << 2 << ") = " << tree.rank("to", 2) << endl;
+	cout << "rank(" << "be" << ", " << 6 << ") = " << tree.rank("be", 6) << endl;
 	cout << endl;
 
 	// select test
-	for (string c : set<string>(v.begin(), v.end()))
-		cout << "select(" << c << ", " << 1 << ") = " << tree.select(c, 1) << endl;
+	// for (string c : set<string>(v.begin(), v.end()))
+	// 	cout << "select(" << c << ", " << 1 << ") = " << tree.select(c, 1) << endl;
+	string c;
+	cout << "select(" << (c = "be") << ", " << 1 << ") = " << tree.select(c, 1) << endl;
+	cout << "select(" << (c = "to") << ", " << 2 << ") = " << tree.select(c, 2) << endl;
 	cout << endl;
 }
 
 void range_quantile_query_test() {
-	vector<int> v({4, 1, 2, 2, 2, 4, 3, 1});
+	vector<int> v({8, 1, 11, 3, 15, 8, 6, 1});
 	wt::wavelet_tree tree(v);
 
 	// range quantile query test
-	for (int k = 1; k <= v.size(); k++)
-		cout << "range_quantile_query(" << 0 << ", " << v.size()-1 << ", " << k << ") = " << tree.range_quantile_query(0, v.size()-1, k) << endl;
+	// for (int k = 1; k <= v.size(); k++)
+	// 	cout << "range_quantile_query(" << 0 << ", " << v.size()-1 << ", " << k << ") = " << tree.range_quantile_query(0, v.size()-1, k) << endl;
+	cout << "range_quantile_query(" << 1 << ", " << 4 << ", " << 2 << ") = " << tree.range_quantile_query(1, 4, 2) << endl;
+	cout << "range_quantile_query(" << 2 << ", " << 6 << ", " << 3 << ") = " << tree.range_quantile_query(2, 6, 3) << endl;
 	cout << endl;
 }
 
 int main() {
 	char_test();
-	int_test();
+	// int_test();
 	string_test();
 	range_quantile_query_test();
 	return 0;
