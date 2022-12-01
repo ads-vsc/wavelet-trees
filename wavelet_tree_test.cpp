@@ -118,6 +118,7 @@ void string_test() {
 	// Select Test
 	for (string c : set<string>(v.begin(), v.end()))
 		cout << "select(" << c << ", " << 1 << ") = " << tree.select(c, 1) << endl;
+	cout << endl;
 }
 
 int main() {
@@ -130,7 +131,8 @@ int main() {
 	wt::wavelet_tree<int> tree(v);
 
 	for (int k = 1; k <= v.size(); k++)
-		cout << "k = " << k << ", element = " << tree.range_quantile_query(0, v.size()-1, k) << endl;
+		cout << "range_quantile_query(" << 0 << ", " << v.size()-1 << ", " << k << ") = " << tree.range_quantile_query(0, v.size()-1, k) << endl;
+	cout << endl;
 
 	return 0;
 }
