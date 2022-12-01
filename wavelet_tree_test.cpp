@@ -3,52 +3,7 @@
 
 using namespace std;
 
-void int_test() {
-	vector<int> v = {7, 4, 1, 6, 8, 3, 5, 2};
-	wt::wavelet_tree tree(v);
-
-#ifdef DEBUG
-	tree.traverse();
-#endif
-
-	for (size_t i = 0; i < v.size(); ++i)
-		cout << "access(" << i << ") = " << tree.access(i) << endl;
-	cout << endl;
-
-	// Rank Test
-	for (int c : set<int>(v.begin(), v.end()))
-		cout << "rank(" << c << ", " << v.size()-1 << ") = " << tree.rank(c, v.size()-1) << endl;
-	cout << endl;
-
-	// Select Test
-	for (int c : set<int>(v.begin(), v.end()))
-		cout << "select(" << c << ", " << 1 << ") = " << tree.select(c, 1) << endl;
-	cout << endl;	
-}
-
-void string_test() {
-	vector<string> v = {"to", "be", "or", "not", "to", "be"};
-	wt::wavelet_tree tree(v);
-
-#ifdef DEBUG
-	tree.traverse();
-#endif
-
-	for (size_t i = 0; i < v.size(); ++i)
-		cout << "access(" << i << ") = " << tree.access(i) << endl;
-	cout << endl;
-
-	// Rank Test
-	for (string c : set<string>(v.begin(), v.end()))
-		cout << "rank(" << c << ", " << v.size()-1 << ") = " << tree.rank(c, v.size()-1) << endl;
-	cout << endl;
-
-	// Select Test
-	for (string c : set<string>(v.begin(), v.end()))
-		cout << "select(" << c << ", " << 1 << ") = " << tree.select(c, 1) << endl;
-}
-
-int main() {
+void char_test() {
 	string s = "alabar a la alabarda";
 	char invalid_c = 'z';
 	// string s = "mississippi";
@@ -118,14 +73,64 @@ int main() {
 		cout << e.what() << endl;
 	}
 	cout << endl;
+}
 
-	
+void int_test() {
+	vector<int> v = {7, 4, 1, 6, 8, 3, 5, 2};
+	wt::wavelet_tree tree(v);
 
-	
+#ifdef DEBUG
+	tree.traverse();
+#endif
 
+	for (size_t i = 0; i < v.size(); ++i)
+		cout << "access(" << i << ") = " << tree.access(i) << endl;
+	cout << endl;
 
+	// Rank Test
+	for (int c : set<int>(v.begin(), v.end()))
+		cout << "rank(" << c << ", " << v.size()-1 << ") = " << tree.rank(c, v.size()-1) << endl;
+	cout << endl;
 
+	// Select Test
+	for (int c : set<int>(v.begin(), v.end()))
+		cout << "select(" << c << ", " << 1 << ") = " << tree.select(c, 1) << endl;
+	cout << endl;	
+}
+
+void string_test() {
+	vector<string> v = {"to", "be", "or", "not", "to", "be"};
+	wt::wavelet_tree tree(v);
+
+#ifdef DEBUG
+	tree.traverse();
+#endif
+
+	for (size_t i = 0; i < v.size(); ++i)
+		cout << "access(" << i << ") = " << tree.access(i) << endl;
+	cout << endl;
+
+	// Rank Test
+	for (string c : set<string>(v.begin(), v.end()))
+		cout << "rank(" << c << ", " << v.size()-1 << ") = " << tree.rank(c, v.size()-1) << endl;
+	cout << endl;
+
+	// Select Test
+	for (string c : set<string>(v.begin(), v.end()))
+		cout << "select(" << c << ", " << 1 << ") = " << tree.select(c, 1) << endl;
+}
+
+int main() {
+	char_test();
 	int_test();
 	string_test();
+
+	// range quantile query test
+	vector<int> v({4, 1, 2, 2, 2, 4, 3, 1});
+	wt::wavelet_tree<int> tree(v);
+
+	for (int k = 1; k <= v.size(); k++)
+		cout << "k = " << k << ", element = " << tree.range_quantile_query(0, v.size()-1, k) << endl;
+
 	return 0;
 }

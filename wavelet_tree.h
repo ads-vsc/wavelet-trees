@@ -6,7 +6,7 @@
 #include <iomanip>
 #include <iostream>
 
-#define PRECOMP
+// #define PRECOMP
 
 namespace wt {
 
@@ -262,6 +262,37 @@ public:
             // update range
             auto mid = (_range.first + _range.second) / 2;
             b ? _range.first = mid + 1 : _range.second = mid;
+        }
+
+        assert(_range.first == _range.second);
+        return alphabet[_range.first - 1];
+    }
+
+    T range_quantile_query(size_t l, size_t r, size_t k) {
+        auto *_node = root;
+        size_t l_rank, r_rank;
+        range _range = {1, alphabet.size()};
+
+        while (_node) {
+#ifdef PRECOMP
+            l_rank = l == 0 ? 0 : bin_util::precomp_rank(0, _node, l - 1);
+            r_rank = bin_util::precomp_rank(0, _node, r);
+#else
+            l_rank = l == 0 ? 0 : bin_util::rank(0, _node->bitmap, l - 1);
+            r_rank = bin_util::rank(0, _node->bitmap, r);
+#endif
+            bool b = r_rank - l_rank < k;
+            auto mid = (_range.first + _range.second) / 2;
+            b ? _range.first = mid + 1 : _range.second = mid;
+            k = b ? k - (r_rank - l_rank) : k;
+#ifdef PRECOMP
+            l = l == 0 ? 0 : bin_util::precomp_rank(b, _node, l - 1);
+            r = bin_util::precomp_rank(b, _node, r) - 1;
+#else
+            l = l == 0 ? 0 : bin_util::rank(b, _node->bitmap, l - 1);
+            r = bin_util::rank(b, _node->bitmap, r) - 1;
+#endif
+            _node = _node->children[b];
         }
 
         assert(_range.first == _range.second);
