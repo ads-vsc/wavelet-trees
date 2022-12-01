@@ -10,6 +10,15 @@
 
 namespace wt {
 
+template<class T>
+void print_element(T& t){
+  std::cout << t << ' ';
+}
+
+void print_element(char c){
+  std::cout << (c == ' ' ? '_' : c) << ' ';
+}
+
 template <class T>
 class node {
 public:
@@ -32,7 +41,7 @@ public:
 
     void print_data() const {
         for (const T& t : data)
-            std::cout << "'" << t << "', ";
+            print_element(t);
         std::cout << std::endl;
     }
 #endif
@@ -85,9 +94,13 @@ class wavelet_tree {
         alphabet = std::vector<T>(st.begin(), st.end());
 
 #ifdef DEBUG
-        std::cout << "alphabet: '";
+        std::cout << "Sequence, S: ";
+        for (I& i = begin; i != end; i++) 
+            print_element(*i);
+        std::cout << std::endl;
+        std::cout << "Alphabet, 𝛴: ";
         for (const T& t: alphabet)
-            std::cout << "'" << t << "', ";
+            print_element(t);
         std::cout << std::endl;
 #endif
 
