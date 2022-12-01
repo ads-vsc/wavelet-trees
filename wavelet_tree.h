@@ -19,6 +19,18 @@ void print_element(char c){
   std::cout << (c == ' ' ? '_' : c) << ' ';
 }
 
+void print_branch_padding(int level) {
+    std::cout << std::string(level, '\t');
+    std::cout << "|─";
+    for (int i = 0; i < 5; ++i)
+        std::cout << "─";
+    std::cout << ' ';
+} 
+
+void print_padding(int level) {
+    std::cout << std::string(level + 1, '\t');
+} 
+
 template <class T>
 class node {
 public:
@@ -40,6 +52,7 @@ public:
     }
 
     void print_data() const {
+        std::cout << "subsequence: ";
         for (const T& t : data)
             print_element(t);
         std::cout << std::endl;
@@ -94,6 +107,7 @@ class wavelet_tree {
         alphabet = std::vector<T>(st.begin(), st.end());
 
 #ifdef DEBUG
+        std::cout << std::endl << std::string(80, '=') << std::endl;
         std::cout << "Sequence, S: ";
         for (I& i = begin; i != end; i++) 
             print_element(*i);
@@ -102,6 +116,7 @@ class wavelet_tree {
         for (const T& t: alphabet)
             print_element(t);
         std::cout << std::endl;
+        std::cout << "Alphabet size, 𝜎: " << alphabet.size() << std::endl << std::endl;
 #endif
 
         size_t count = 0;
@@ -183,7 +198,7 @@ public:
         range _range = {1, alphabet.size()};
 
         if (alpha_map.count(val) == 0) {
-            throw std::out_of_range("invalid input");
+            throw std::out_of_range("Invalid input!");
         }
         
         auto symbol_num = alpha_map.at(val);
@@ -241,7 +256,7 @@ public:
     size_t select(T& val, size_t rank) const {
 
         if (alpha_map.count(val) == 0) {
-            throw std::out_of_range("invalid input");
+            throw std::out_of_range("Invalid input!");
         }
         
         range _range = {1, alphabet.size()};
@@ -252,7 +267,7 @@ public:
     T access(size_t index) const {
 
         if (index < 0 || index >= root->bitmap.size()) {
-            throw (std::out_of_range("index out of range"));
+            throw (std::out_of_range("Index out of range!"));
         }
         
         auto *_node = root;
@@ -317,20 +332,26 @@ public:
         if (_node == nullptr)
             return;
 
+        print_branch_padding(level);
         std::cout << "level: " << level << std::endl;
+        print_padding(level);
         _node->print_data();
+        print_padding(level);
         std::cout << "bitmap: ";
         for (bool b : _node->bitmap)
             std::cout << std::setw(2) << b << ' ';
         std::cout << std::endl;
+        print_padding(level);
         std::cout << "rank_0: ";
         for (size_t r : _node->rank_0)
             std::cout << std::setw(2) << r << ' ';
         std::cout << std::endl;
+        print_padding(level);
         std::cout << "select_0: ";
         for (size_t s : _node->select_0)
             std::cout << std::setw(2) << s << ' ';
         std::cout << std::endl;
+        print_padding(level);
         std::cout << "select_1: ";
         for (size_t s : _node->select_1)
             std::cout << std::setw(2) << s << ' ';
@@ -341,7 +362,7 @@ public:
     }
 
     void traverse() {
-		std::cout << "traverse()" << std::endl;
+		std::cout << "traverse(): " << std::endl << std::endl;
         _traverse(root, 0);
     }
 #endif

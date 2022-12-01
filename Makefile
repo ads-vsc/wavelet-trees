@@ -1,5 +1,5 @@
 clean:
-	-rm out/*
+	rm out/* -f
 
 build: clean
 	@mkdir -p out
