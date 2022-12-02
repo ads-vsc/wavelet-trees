@@ -8,6 +8,6 @@
 
 ## Date: December 1, 2022
 
-## [Slides](https://github.com/ads-vsc/wavelet-trees/blob/ADS-Wavelet_Trees-Varad,Sagar,Chinmay.pdf)
+## [Slides](https://github.com/ads-vsc/wavelet-trees/blob/main/ADS-%20Wavelet%20Trees-%20Varad%2C%20Sagar%2C%20Chinmay.pdf)
 
 ## Reference- [Navarro, G. (2014). Wavelet trees for all. Journal of Discrete Algorithms, 25, 2-20.](https://doi.org/10.1016/j.jda.2013.07.004)
