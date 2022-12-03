@@ -3,6 +3,7 @@
 #include <unordered_map>
 #include <set>
 #include <utility>
+#include <cassert>
 #include <iomanip>
 #include <iostream>
 
@@ -253,7 +254,7 @@ public:
 #endif
     }
 
-    size_t select(T& val, size_t rank) const {
+    size_t select(const T& val, size_t rank) const {
 
         if (alpha_map.count(val) == 0) {
             throw std::out_of_range("Invalid input!");

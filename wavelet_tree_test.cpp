@@ -1,5 +1,5 @@
-#include <bits/stdc++.h>
 #include "wavelet_tree.h"
+#include <bits/stdc++.h>
 
 using namespace std;
 
